@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleDoc - عيادة أولاد رشاش</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; width: 100%; max-width: 450px; padding: 30px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); border-top: 10px solid #007bff; text-align: center; }
+        .doc-section { background: #f0f7ff; padding: 20px; border-radius: 15px; margin-bottom: 25px; border-right: 6px solid #007bff; text-align: right; }
+        .btn-call { background: #28a745; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 15px; border-radius: 12px; margin-top: 15px; font-weight: bold; font-size: 18px; }
+        .btn-whatsapp { background: #25D366; color: white; text-decoration: none; display: none; align-items: center; justify-content: center; padding: 15px; border-radius: 12px; margin-top: 10px; font-weight: bold; }
+        input, button { width: 100%; padding: 15px; margin: 12px 0; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 12px; background: #fff3cd; color: #856404; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="doc-section">
+        <h3 style="margin:0; color:#0056b3;">👨‍⚕️ عيادة أولاد رشاش</h3>
+        <p style="margin:5px 0;">📍 خنشلة - وسط المدينة</p>
+        <a href="tel:0667710260" class="btn-call">📞 اتصل للطوارئ</a>
+    </div>
+
+    <h2 style="color:#333;">🏥 حجز موعد ذكي</h2>
+    <input type="text" id="pName" placeholder="اسم المريض الفاضل">
+    <input type="number" id="pCount" placeholder="عدد المرضى أمامك">
+    <button onclick="calculate()">احسب الموعد وأرسل واتساب</button>
+
+    <div id="result"></div>
+    <a id="whatsappBtn" href="#" class="btn-whatsapp">💬 إرسال الموعد للطبيب عبر واتساب</a>
+</div>
+
+<script>
+    function calculate() {
+        const name = document.getElementById('pName').value;
+        const count = document.getElementById('pCount').value;
+        const resDiv = document.getElementById('result');
+        const waBtn = document.getElementById('whatsappBtn');
+        
+        if(name && count) {
+            const time = count * 15;
+            const message = `مرحباً دكتور، أنا المريض ${name}. حسبت موعدي عبر التطبيق، ووجدت أمامي ${count} أشخاص، موعدي بعد ${time} دقيقة.`;
+            
+            resDiv.style.display = "block";
+            resDiv.innerHTML = `سيد(ة) ${name}، موعدك المتوقع بعد ${time} دقيقة.`;
+            
+            // تحديث رابط الواتساب (استبدل +213667710260 برقمك بصيغة دولية)
+           waBtn.style.display = "flex";
+waBtn.href = `https://wa.me/213667710260?text=${encodeURIComponent(message)}`;
+
+        } else {
+            alert("يرجى ملء البيانات");
+        }
+    }
+</script>
+
+</body>
+</html>
+
