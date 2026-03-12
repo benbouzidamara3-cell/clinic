@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة أطباء الجزائر</title>
+    <title>Dz-Doc | المنصة الوطنية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #002b5b; --accent: #007bff; --success: #25d366; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        header { background: var(--primary); color: white; padding: 35px 15px; text-align: center; border-radius: 0 0 40px 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .search-area { position: relative; max-width: 500px; margin: -30px auto 20px; padding: 0 20px; }
-        .search-input { width: 100%; padding: 18px 25px; border: none; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); font-size: 17px; outline: none; box-sizing: border-box; }
-        .results-container { padding: 10px; max-width: 600px; margin: auto; }
-        .dropdown { position: absolute; top: 100%; left: 30px; right: 30px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px; }
-        .dropdown-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f1f1; text-align: right; font-weight: 500; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; text-align: center; }
+        header { background: var(--primary); color: white; padding: 30px 15px; border-radius: 0 0 35px 35px; }
+        .search-area { position: relative; max-width: 500px; margin: -25px auto 20px; padding: 0 20px; }
+        .search-input { width: 100%; padding: 15px 20px; border: none; border-radius: 50px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); font-size: 16px; outline: none; box-sizing: border-box; }
+        .dropdown { position: absolute; top: 100%; left: 30px; right: 30px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 250px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px; }
+        .dropdown-item { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid #f1f1f1; text-align: right; }
         .dropdown-item:hover { background: #f0f7ff; color: var(--accent); }
-        .no-data { text-align: center; color: #888; margin-top: 50px; font-size: 18px; }
-        .doctor-card { background: white; margin: 15px 0; padding: 20px; border-radius: 20px; border-right: 8px solid var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: right; animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .results-container { padding: 10px; max-width: 600px; margin: auto; }
+        .doctor-card { background: white; margin: 15px 0; padding: 20px; border-radius: 20px; border-right: 6px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: right; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; color: white; }
+        .btn-map { background: var(--accent); }
+        .btn-wa { background: var(--success); }
     </style>
 </head>
 <body>
@@ -28,28 +30,30 @@
 </header>
 
 <div class="search-area">
-    <input type="text" id="wilayaInput" class="search-input" placeholder="🔍 اكتب اسم الولاية للبحث..." oninput="handleSearch()">
+    <input type="text" id="wilayaInput" class="search-input" placeholder="🔍 ابحث عن ولايتك (مثلاً: خنشلة)..." oninput="handleSearch()">
     <div id="dropdown" class="dropdown"></div>
 </div>
 
 <div id="results" class="results-container">
-    <div class="no-data">يرجى اختيار الولاية لعرض الأطباء</div>
+    <p style="color: #888; margin-top: 40px;">اختر الولاية لعرض الأطباء المتاحين</p>
 </div>
 
 <script>
-// قائمة الـ 69 ولاية كاملة
+// قائمة الولايات الـ 69 كاملة
 const wilayas = [
     "01 - أدرار", "02 - الشلف", "03 - الأغواط", "04 - أم البواقي", "05 - باتنة", "06 - بجاية", "07 - بسكرة", "08 - بشار", "09 - البليدة", "10 - البويرة",
     "11 - تمنراست", "12 - تبسة", "13 - تلمسان", "14 - تيارت", "15 - تيزي وزو", "16 - الجزائر", "17 - الجلفة", "18 - جيجل", "19 - سطيف", "20 - سعيدة",
     "21 - سكيكدة", "22 - سيدي بلعباس", "23 - عنابة", "24 - قالمة", "25 - قسنطينة", "26 - المدية", "27 - مستغانم", "28 - المسيلة", "29 - معسكر", "30 - ورقلة",
     "31 - وهران", "32 - البيض", "33 - إليزي", "34 - برج بوعريريج", "35 - بومرداس", "36 - الطارف", "37 - تندوف", "38 - تسمسيلت", "39 - الوادي", "40 - خنشلة",
     "41 - سوق أهراس", "42 - تيبازة", "43 - ميلة", "44 - عين الدفلى", "45 - النعامة", "46 - عين تموشنت", "47 - غرداية", "48 - غليزان", "49 - تيميمون", "50 - برج باجي مختار",
-    "51 - أولاد جلال", "52 - بني عباس", "53 - عين صالح", "54 - عين قزام", "55 - تقرت", "56 - جانت", "57 - المغير", "58 - المنيعة"
-    // ملاحظة: يمكنك إضافة الولايات العشر الجديدة (59-68) هنا بنفس التنسيق
+    "51 - أولاد جلال", "52 - بني عباس", "53 - عين صالح", "54 - عين قزام", "55 - تقرت", "56 - جانت", "57 - المغير", "58 - المنيعة", "59 - تيميمون الجديدة", "60 - برج باجي مختار الجديدة",
+    "61 - أولاد جلال الجديدة", "62 - بني عباس الجديدة", "63 - عين صالح الجديدة", "64 - عين قزام الجديدة", "65 - تقرت الجديدة", "66 - جانت الجديدة", "67 - المغير الجديدة", "68 - المنيعة الجديدة", "69 - منيعة"
 ];
 
-// قاعدة البيانات (فارغة الآن وجاهزة للإضافة)
-const doctorsDB = [];
+// قاعدة البيانات (تم حذف د. عمارة وابن سينا)
+const doctorsDB = [
+    // هنا ستضيف بياناتك الحقيقية لاحقاً
+];
 
 function handleSearch() {
     const input = document.getElementById('wilayaInput');
@@ -85,23 +89,22 @@ function renderResults(wilayaName) {
     const filtered = doctorsDB.filter(d => d.wilaya === wilayaName);
     
     if (filtered.length === 0) {
-        res.innerHTML = `<div class="no-data">لا يوجد أطباء مسجلين حالياً في ${wilayaName}</div>`;
+        res.innerHTML = `<p style="margin-top:30px; color:#999;">لا يوجد أطباء مسجلين حالياً في ${wilayaName}</p>`;
     } else {
         res.innerHTML = '';
         filtered.forEach(d => {
             res.innerHTML += `
                 <div class="doctor-card">
                     <h3>${d.name}</h3>
-                    <p><i class="fas fa-stethoscope"></i> ${d.spec} | ${d.wilaya}</p>
-                    <div style="display:flex; gap:10px; margin-top:15px;">
-                        <a href="${d.map}" target="_blank" style="flex:1; background:var(--accent); color:white; padding:12px; border-radius:10px; text-decoration:none; text-align:center; font-weight:bold;">📍 الخريطة</a>
-                        <a href="https://wa.me/${d.tel}" style="flex:1; background:var(--success); color:white; padding:12px; border-radius:10px; text-decoration:none; text-align:center; font-weight:bold;">💬 واتساب</a>
+                    <p><i class="fas fa-user-md"></i> ${d.spec} | ${d.wilaya}</p>
+                    <div class="btn-group">
+                        <a href="${d.map}" target="_blank" class="btn btn-map">📍 الموقع</a>
+                        <a href="https://wa.me/${d.tel}" class="btn btn-wa">💬 واتساب</a>
                     </div>
                 </div>`;
         });
     }
 }
 </script>
-
 </body>
 </html>
